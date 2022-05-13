@@ -99,7 +99,25 @@ class CrosswordCreator():
         (Remove any values that are inconsistent with a variable's unary
          constraints; in this case, the length of the word.)
         """
-        raise NotImplementedError
+
+        # iterate over the variables:
+        for variable in self.domains.keys():
+
+            #iterate over a copy of the variable to remove x!
+            for x in self.domains[variable].copy():
+
+                #if the length of the word x is not equal to length of variable, remove x from original domain
+                if len(x) != variable.length:
+                    self.domains[variable].remove(x)
+
+        """"# test revise DELETE later:
+        k = 0
+        for variable in self.domains.keys():
+            k += 1
+            if k > 2:
+                self.revise(variable_before, variable)
+            variable_before = variable
+        """
 
     def revise(self, x, y):
         """
@@ -110,7 +128,34 @@ class CrosswordCreator():
         Return True if a revision was made to the domain of `x`; return
         False if no revision was made.
         """
-        raise NotImplementedError
+        # set initial status of changes to false
+        changed = False
+
+        # loop over overlaps:
+        for variable_pair in self.crossword.overlaps:
+
+            # get overlaps that are not None -> overlaps
+            if self.crossword.overlaps[variable_pair] != None:
+
+                #assign x and y for matching pair
+                x = variable_pair[0]
+                y = variable_pair[1]
+
+                #loop through words in domain of X and domain of Y. Loop over y first to keep y consistent.
+                for word_y in self.domains[y].copy():
+                    for word_x in self.domains[x].copy():
+
+                        #check ith character of word X against jth character of word y:
+                        i = self.crossword.overlaps[variable_pair][0]
+                        j = self.crossword.overlaps[variable_pair][1]
+
+                        #if no overlap, then remove word_x from domain of x
+                        if word_x[i] != word_y[j]:
+                            self.domains[x].remove(word_x)
+                            changed = True
+
+        #return if there was a change
+        return changed
 
     def ac3(self, arcs=None):
         """
