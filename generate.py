@@ -209,19 +209,20 @@ class CrosswordCreator():
 
         value_buffer = list()
         for key in assignment:
-            for value in self.domains[key]:
 
-                # check if value already in buffer (value not distinct) if so, return false
-                if value in value_buffer:
-                    return False
+            # check if value already in buffer (value not distinct) if so, return false
+            if assignment[key] not in value_buffer:
+                value_buffer.append(assignment[key])
+            else:
+                return False
 
 
-                # check if value is correct length
-                if len(value) != key.length:
-                    return False
+            # check if value is correct length
+            if len(assignment[key]) != key.length:
+                return False
 
-                #if all good, append value to buffer for check
-                value_buffer.append(value)
+            #if all good, append value to buffer for check
+
 
             # check neighbors first loop over neighbors of each key:
             for neighbor in self.crossword.neighbors(key):
@@ -287,7 +288,7 @@ class CrosswordCreator():
         if self.assignment_complete(assignment):
             return assignment
 
-        # select an unassigned varaible and add it to assignment.
+        # select an unassigned variable and add it to assignment.
         var = self.select_unassigned_variable(assignment)
         for value in self.domains[var]:
             assignment[var] = value
